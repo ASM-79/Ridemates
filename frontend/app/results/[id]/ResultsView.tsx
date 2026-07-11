@@ -42,9 +42,15 @@ export function ResultsView({ requestId }: { requestId: string }) {
 
   const origins =
     result.status === "matched"
-      ? result.match.riders.map((r) => ({ name: r.name, lat: r.originLat, lng: r.originLng }))
+      ? result.match.riders.map((r) => ({
+          id: r.requestId,
+          name: r.name,
+          lat: r.originLat,
+          lng: r.originLng,
+        }))
       : [
           {
+            id: result.commuteRequest.id,
             name: result.viewer?.name ?? "You",
             lat: result.commuteRequest.originLat,
             lng: result.commuteRequest.originLng,

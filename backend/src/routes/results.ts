@@ -50,6 +50,7 @@ resultsRouter.get("/commute-requests/:id/result", async (req, res) => {
     viewer: owner ? { name: owner.name, email: owner.email } : null,
     transitSuggestion: buildTransitSuggestion(commuteRequest),
     commuteRequest: {
+      id: commuteRequest.id,
       originAddress: commuteRequest.origin_address,
       originLat: commuteRequest.origin_lat,
       originLng: commuteRequest.origin_lng,

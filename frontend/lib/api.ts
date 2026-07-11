@@ -66,6 +66,7 @@ export interface UnmatchedResult {
   status: "unmatched";
   transitSuggestion: TransitSuggestion;
   commuteRequest: {
+    id: string;
     originAddress: string;
     originLat: number;
     originLng: number;
