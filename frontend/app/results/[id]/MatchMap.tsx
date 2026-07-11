@@ -41,7 +41,7 @@ export function MatchMap({ origins, destination }: MatchMapProps) {
     <MapContainer
       bounds={bounds}
       boundsOptions={{ padding: [40, 40] }}
-      className="h-96 w-full rounded-lg"
+      className="h-full w-full"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -57,7 +57,7 @@ export function MatchMap({ origins, destination }: MatchMapProps) {
               [origin.lat, origin.lng],
               [destination.lat, destination.lng],
             ]}
-            pathOptions={{ color: "#2563eb", weight: 3 }}
+            pathOptions={{ color: "#c9a227", weight: 3 }}
           />
         </Fragment>
       ))}

@@ -48,7 +48,7 @@ export function CommuteRequestForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -63,7 +63,7 @@ export function CommuteRequestForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@deanza.edu"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -78,7 +78,7 @@ export function CommuteRequestForm() {
           value={originAddress}
           onChange={(e) => setOriginAddress(e.target.value)}
           placeholder="Your home address"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -93,7 +93,7 @@ export function CommuteRequestForm() {
           value={destAddress}
           onChange={(e) => setDestAddress(e.target.value)}
           placeholder="De Anza College, Cupertino, CA"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -107,7 +107,7 @@ export function CommuteRequestForm() {
           required
           value={departureTime}
           onChange={(e) => setDepartureTime(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -123,7 +123,7 @@ export function CommuteRequestForm() {
           required
           value={flexibilityMinutes}
           onChange={(e) => setFlexibilityMinutes(Number(e.target.value))}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
         />
       </div>
 
@@ -134,7 +134,7 @@ export function CommuteRequestForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-md bg-dark-green px-4 py-2 font-medium text-white hover:bg-dark-green-light disabled:opacity-50"
       >
         {status === "submitting" ? "Submitting…" : "Submit commute request"}
       </button>
