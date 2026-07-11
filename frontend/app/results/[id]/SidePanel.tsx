@@ -2,8 +2,10 @@
 
 import { useState, type ReactNode } from "react";
 import type { CommuteRequestResult } from "@/lib/api";
+import { RiderPanel } from "./RiderPanel";
+import { DriverPanel } from "./DriverPanel";
 
-type RiderMode = "rider" | "driver";
+type Mode = "rider" | "driver";
 
 function NavItem({ label, icon }: { label: string; icon: ReactNode }) {
   return (
@@ -17,60 +19,11 @@ function NavItem({ label, icon }: { label: string; icon: ReactNode }) {
   );
 }
 
-function ResultSummary({ result }: { result: CommuteRequestResult }) {
-  if (result.status === "matched") {
-    const { match } = result;
-    return (
-      <div className="rounded-2xl bg-dark-green/8 p-4 ring-1 ring-dark-green/15">
-        <h2 className="text-sm font-semibold tracking-wide text-dark-green uppercase">
-          Carpool match found
-        </h2>
-        <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
-          {match.riders.map((r) => (
-            <li key={r.requestId} className="flex items-baseline gap-1.5">
-              <span className="font-medium text-slate-900">{r.name}</span>
-              <span className="truncate text-slate-500">{r.originAddress}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">{match.explanation}</p>
-        {match.carbonSavingsKg !== null && (
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-xs font-semibold text-gold-dark">
-            🌱 {match.carbonSavingsKg} kg CO₂ saved
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const { transitSuggestion } = result;
-  return (
-    <div className="rounded-2xl bg-gold/10 p-4 ring-1 ring-gold/25">
-      <h2 className="text-sm font-semibold tracking-wide text-gold-dark uppercase">
-        No carpool match yet
-      </h2>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">{transitSuggestion.summary}</p>
-      <a
-        href={transitSuggestion.plannerUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-3 inline-block rounded-full bg-dark-green px-4 py-1.5 text-sm font-medium text-white transition hover:bg-dark-green-light"
-      >
-        Open VTA trip planner
-      </a>
-    </div>
-  );
-}
-
-export function SidePanel({
-  result,
-  riderName,
-}: {
-  result: CommuteRequestResult | null;
-  riderName: string | null;
-}) {
+export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
   const [dismissed, setDismissed] = useState(false);
-  const [mode, setMode] = useState<RiderMode>("rider");
+  const [mode, setMode] = useState<Mode>("rider");
+
+  const viewer = result?.viewer ?? null;
 
   if (dismissed) {
     return (
@@ -100,10 +53,10 @@ export function SidePanel({
 
       <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-dark-green text-sm font-semibold text-white">
-          {(riderName ?? "G").charAt(0).toUpperCase()}
+          {(viewer?.name ?? "G").charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-900">{riderName ?? "Guest"}</p>
+          <p className="truncate text-sm font-medium text-slate-900">{viewer?.name ?? "Guest"}</p>
           <p className="text-xs text-slate-500">De Anza College</p>
         </div>
       </div>
@@ -129,10 +82,11 @@ export function SidePanel({
         </button>
       </div>
 
-      <div className="mt-4">{result && <ResultSummary result={result} />}</div>
+      <div className="mt-4">
+        {mode === "rider" ? <RiderPanel viewer={viewer} /> : <DriverPanel viewer={viewer} />}
+      </div>
 
       <nav className="mt-4 space-y-0.5 border-t border-black/5 pt-3">
-        <NavItem label="My rides" icon="🚗" />
         <NavItem label="Account" icon="👤" />
         <NavItem label="Settings" icon="⚙️" />
       </nav>

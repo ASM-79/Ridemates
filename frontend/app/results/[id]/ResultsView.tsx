@@ -40,18 +40,12 @@ export function ResultsView({ requestId }: { requestId: string }) {
     );
   }
 
-  const riderName =
-    result.status === "matched"
-      ? (result.match.riders.find((r) => r.requestId === requestId) ?? result.match.riders[0])
-          ?.name ?? null
-      : null;
-
   const origins =
     result.status === "matched"
       ? result.match.riders.map((r) => ({ name: r.name, lat: r.originLat, lng: r.originLng }))
       : [
           {
-            name: riderName ?? "You",
+            name: result.viewer?.name ?? "You",
             lat: result.commuteRequest.originLat,
             lng: result.commuteRequest.originLng,
           },
@@ -75,7 +69,7 @@ export function ResultsView({ requestId }: { requestId: string }) {
   return (
     <div className="relative h-full w-full">
       {destination && <MatchMap origins={origins} destination={destination} />}
-      <SidePanel result={result} riderName={riderName} />
+      <SidePanel result={result} />
     </div>
   );
 }
