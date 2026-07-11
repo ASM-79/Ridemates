@@ -8,7 +8,7 @@ import { SidePanel } from "./SidePanel";
 const MatchMap = dynamic(() => import("./MatchMap").then((m) => m.MatchMap), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center bg-dark-green/5 text-sm text-foreground/60">
+    <div className="flex h-full w-full items-center justify-center bg-red/5 text-sm text-foreground/60">
       Loading map…
     </div>
   ),

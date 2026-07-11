@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DACarpool",
+  title: "Ridemates",
   description: "AI-powered carpool matching for De Anza College students",
 };
 

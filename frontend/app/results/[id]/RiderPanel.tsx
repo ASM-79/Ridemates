@@ -11,7 +11,7 @@ import {
 function StatusBadge({ status }: { status: "matched" | "pending" }) {
   if (status === "matched") {
     return (
-      <span className="rounded-full bg-dark-green/15 px-2 py-0.5 text-xs font-medium text-dark-green">
+      <span className="rounded-full bg-red/15 px-2 py-0.5 text-xs font-medium text-red">
         Matched
       </span>
     );
@@ -87,7 +87,7 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
       <button
         type="button"
         onClick={() => setFormOpen((v) => !v)}
-        className="w-full rounded-full bg-dark-green px-4 py-2 text-sm font-medium text-white transition hover:bg-dark-green-light"
+        className="w-full rounded-full bg-red px-4 py-2 text-sm font-medium text-white transition hover:bg-red-light"
       >
         {formOpen ? "Cancel" : "+ New ride request"}
       </button>
@@ -100,7 +100,7 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
             placeholder="Origin address"
             value={originAddress}
             onChange={(e) => setOriginAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <input
             type="text"
@@ -108,14 +108,14 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
             placeholder="Destination address"
             value={destAddress}
             onChange={(e) => setDestAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <input
             type="datetime-local"
             required
             value={departureTime}
             onChange={(e) => setDepartureTime(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-500">Flexibility (min)</label>
@@ -126,7 +126,7 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
               required
               value={flexibilityMinutes}
               onChange={(e) => setFlexibilityMinutes(Number(e.target.value))}
-              className="w-20 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-sm focus:border-dark-green focus:outline-none"
+              className="w-20 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-sm focus:border-red focus:outline-none"
             />
           </div>
           {submitStatus === "error" && <p className="text-xs text-red-600">{submitError}</p>}

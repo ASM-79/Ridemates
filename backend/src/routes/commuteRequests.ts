@@ -24,7 +24,7 @@ commuteRequestsRouter.post("/commute-requests", async (req, res) => {
     return res.status(400).json({ error: "name is required" });
   }
   if (!email || !isCollegeEmail(email)) {
-    return res.status(400).json({ error: "a valid @deanza.edu or @fhda.edu email is required" });
+    return res.status(400).json({ error: "a valid email address is required" });
   }
   if (!originAddress || typeof originAddress !== "string") {
     return res.status(400).json({ error: "originAddress is required" });

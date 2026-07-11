@@ -35,7 +35,7 @@ driversRouter.post("/routes", async (req, res) => {
     return res.status(400).json({ error: "name is required" });
   }
   if (!email || !isCollegeEmail(email)) {
-    return res.status(400).json({ error: "a valid @deanza.edu or @fhda.edu email is required" });
+    return res.status(400).json({ error: "a valid email address is required" });
   }
   if (!startAddress || typeof startAddress !== "string") {
     return res.status(400).json({ error: "startAddress is required" });

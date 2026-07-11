@@ -39,7 +39,7 @@ export function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@deanza.edu"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
@@ -53,7 +53,7 @@ export function LoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
@@ -64,14 +64,14 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-md bg-dark-green px-4 py-2 font-medium text-white hover:bg-dark-green-light disabled:opacity-50"
+        className="w-full rounded-md bg-red px-4 py-2 font-medium text-white hover:bg-red-light disabled:opacity-50"
       >
         {status === "submitting" ? "Logging in…" : "Log in"}
       </button>
 
       <p className="text-center text-sm text-slate-500">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-dark-green underline">
+        <Link href="/signup" className="text-red underline">
           Sign up
         </Link>
       </p>

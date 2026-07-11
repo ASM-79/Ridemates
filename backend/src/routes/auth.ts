@@ -44,7 +44,7 @@ authRouter.post("/auth/signup", async (req, res) => {
     return res.status(400).json({ error: "name is required" });
   }
   if (!email || !isCollegeEmail(email)) {
-    return res.status(400).json({ error: "a valid @deanza.edu or @fhda.edu email is required" });
+    return res.status(400).json({ error: "a valid email address is required" });
   }
   if (!password || password.length < MIN_PASSWORD_LENGTH) {
     return res.status(400).json({ error: `password must be at least ${MIN_PASSWORD_LENGTH} characters` });

@@ -39,7 +39,7 @@ export function CommuteRequestForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-sm font-medium text-slate-700">
           Name
         </label>
         <input
@@ -48,13 +48,13 @@ export function CommuteRequestForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email (@deanza.edu or @fhda.edu)
+        <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+          Email
         </label>
         <input
           id="email"
@@ -63,12 +63,12 @@ export function CommuteRequestForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@deanza.edu"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
       <div>
-        <label htmlFor="originAddress" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="originAddress" className="block text-sm font-medium text-slate-700">
           Origin address
         </label>
         <input
@@ -78,12 +78,12 @@ export function CommuteRequestForm() {
           value={originAddress}
           onChange={(e) => setOriginAddress(e.target.value)}
           placeholder="Your home address"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
       <div>
-        <label htmlFor="destAddress" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="destAddress" className="block text-sm font-medium text-slate-700">
           Destination address
         </label>
         <input
@@ -93,12 +93,12 @@ export function CommuteRequestForm() {
           value={destAddress}
           onChange={(e) => setDestAddress(e.target.value)}
           placeholder="De Anza College, Cupertino, CA"
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
       <div>
-        <label htmlFor="departureTime" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="departureTime" className="block text-sm font-medium text-slate-700">
           Departure time
         </label>
         <input
@@ -107,12 +107,12 @@ export function CommuteRequestForm() {
           required
           value={departureTime}
           onChange={(e) => setDepartureTime(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
       <div>
-        <label htmlFor="flexibilityMinutes" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="flexibilityMinutes" className="block text-sm font-medium text-slate-700">
           Flexibility window (minutes)
         </label>
         <input
@@ -123,7 +123,7 @@ export function CommuteRequestForm() {
           required
           value={flexibilityMinutes}
           onChange={(e) => setFlexibilityMinutes(Number(e.target.value))}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-dark-green focus:outline-none"
+          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red focus:outline-none"
         />
       </div>
 
@@ -134,7 +134,7 @@ export function CommuteRequestForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-md bg-dark-green px-4 py-2 font-medium text-white hover:bg-dark-green-light disabled:opacity-50"
+        className="w-full rounded-md bg-red px-4 py-2 font-medium text-white hover:bg-red-light disabled:opacity-50"
       >
         {status === "submitting" ? "Submitting…" : "Submit commute request"}
       </button>

@@ -40,7 +40,7 @@ export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
   return (
     <div className="absolute top-4 left-4 z-[1000] flex max-h-[calc(100vh-2rem)] w-96 flex-col overflow-y-auto rounded-3xl bg-white/70 p-5 shadow-2xl ring-1 ring-black/5 backdrop-blur-2xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold tracking-tight text-slate-900">DACarpool</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-red">Ridemates</h1>
         <button
           type="button"
           onClick={() => setDismissed(true)}
@@ -52,7 +52,7 @@ export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
       </div>
 
       <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-dark-green text-sm font-semibold text-white">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red text-sm font-semibold text-white">
           {(viewer?.name ?? "G").charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0">
@@ -66,7 +66,7 @@ export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
           type="button"
           onClick={() => setMode("rider")}
           className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
-            mode === "rider" ? "bg-dark-green text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
+            mode === "rider" ? "bg-red text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
           }`}
         >
           Rider
@@ -75,7 +75,7 @@ export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
           type="button"
           onClick={() => setMode("driver")}
           className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
-            mode === "driver" ? "bg-dark-green text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
+            mode === "driver" ? "bg-red text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
           }`}
         >
           Driver

@@ -86,7 +86,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
       <button
         type="button"
         onClick={() => setFormOpen((v) => !v)}
-        className="w-full rounded-full bg-dark-green px-4 py-2 text-sm font-medium text-white transition hover:bg-dark-green-light"
+        className="w-full rounded-full bg-red px-4 py-2 text-sm font-medium text-white transition hover:bg-red-light"
       >
         {formOpen ? "Cancel" : "+ Schedule a ride"}
       </button>
@@ -99,7 +99,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
             placeholder="Start address"
             value={startAddress}
             onChange={(e) => setStartAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <input
             type="text"
@@ -107,14 +107,14 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
             placeholder="End address"
             value={endAddress}
             onChange={(e) => setEndAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <input
             type="time"
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-dark-green focus:outline-none"
+            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-500">Seats available</label>
@@ -125,7 +125,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
               required
               value={seatsAvailable}
               onChange={(e) => setSeatsAvailable(Number(e.target.value))}
-              className="w-16 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-sm focus:border-dark-green focus:outline-none"
+              className="w-16 rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-sm focus:border-red focus:outline-none"
             />
           </div>
           {submitStatus === "error" && <p className="text-xs text-red-600">{submitError}</p>}
@@ -151,7 +151,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
               {r.route.start_address.split(",")[0]} → {r.route.end_address.split(",")[0]}
             </p>
             <div className="mt-1 flex items-center gap-1.5">
-              <span className="rounded-full bg-dark-green/15 px-2 py-0.5 text-xs font-medium text-dark-green">
+              <span className="rounded-full bg-red/15 px-2 py-0.5 text-xs font-medium text-red">
                 {r.confirmedCount}/{r.seatsAvailable} seats filled
               </span>
               {r.seatsRemaining === 0 && (
@@ -181,7 +181,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
                       type="button"
                       disabled={r.seatsRemaining === 0 || confirmingId === rider.requestId}
                       onClick={() => handleConfirm(r.route.id, rider.requestId)}
-                      className="shrink-0 rounded-full bg-dark-green px-2.5 py-1 text-xs font-medium text-white transition hover:bg-dark-green-light disabled:opacity-40"
+                      className="shrink-0 rounded-full bg-red px-2.5 py-1 text-xs font-medium text-white transition hover:bg-red-light disabled:opacity-40"
                     >
                       {confirmingId === rider.requestId ? "…" : "Confirm"}
                     </button>
