@@ -1,4 +1,5 @@
 import type { CommuteRequest } from "../models/commuteRequests.js";
+import { haversineMiles } from "./geo.js";
 
 export interface TransitSuggestion {
   plannerUrl: string;
@@ -11,22 +12,6 @@ const VTA_TRIP_PLANNER_URL = "https://www.vta.org/go";
 
 const AVG_BUS_SPEED_MPH = 14;
 const WAIT_AND_WALK_BUFFER_MIN = 15;
-
-const EARTH_RADIUS_MILES = 3958.8;
-
-function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
-}
-
-function haversineMiles(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const dLat = toRadians(lat2 - lat1);
-  const dLng = toRadians(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return EARTH_RADIUS_MILES * c;
-}
 
 // Real-time VTA routing requires a live trip-planning API we don't have
 // access to. This produces a plausible, distance-scaled suggestion (bus vs.

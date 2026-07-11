@@ -9,9 +9,9 @@ function NavItem({ label, icon }: { label: string; icon: ReactNode }) {
   return (
     <button
       type="button"
-      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-dark-green/10"
+      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
     >
-      <span className="text-dark-green">{icon}</span>
+      <span className="text-base">{icon}</span>
       {label}
     </button>
   );
@@ -21,20 +21,23 @@ function ResultSummary({ result }: { result: CommuteRequestResult }) {
   if (result.status === "matched") {
     const { match } = result;
     return (
-      <div className="rounded-lg border border-dark-green/30 bg-dark-green/5 p-4">
-        <h2 className="text-base font-semibold text-dark-green">You have a carpool match</h2>
-        <ul className="mt-2 space-y-1 text-sm text-dark-green">
+      <div className="rounded-2xl bg-dark-green/8 p-4 ring-1 ring-dark-green/15">
+        <h2 className="text-sm font-semibold tracking-wide text-dark-green uppercase">
+          Carpool match found
+        </h2>
+        <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
           {match.riders.map((r) => (
-            <li key={r.requestId}>
-              <span className="font-medium">{r.name}</span> — {r.originAddress}
+            <li key={r.requestId} className="flex items-baseline gap-1.5">
+              <span className="font-medium text-slate-900">{r.name}</span>
+              <span className="truncate text-slate-500">{r.originAddress}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-sm text-dark-green">{match.explanation}</p>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">{match.explanation}</p>
         {match.carbonSavingsKg !== null && (
-          <p className="mt-3 text-sm font-medium text-gold-dark">
-            Estimated carbon savings: {match.carbonSavingsKg} kg CO₂
-          </p>
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-xs font-semibold text-gold-dark">
+            🌱 {match.carbonSavingsKg} kg CO₂ saved
+          </div>
         )}
       </div>
     );
@@ -42,14 +45,16 @@ function ResultSummary({ result }: { result: CommuteRequestResult }) {
 
   const { transitSuggestion } = result;
   return (
-    <div className="rounded-lg border border-gold/40 bg-gold/10 p-4">
-      <h2 className="text-base font-semibold text-gold-dark">No carpool match yet</h2>
-      <p className="mt-2 text-sm text-gold-dark">{transitSuggestion.summary}</p>
+    <div className="rounded-2xl bg-gold/10 p-4 ring-1 ring-gold/25">
+      <h2 className="text-sm font-semibold tracking-wide text-gold-dark uppercase">
+        No carpool match yet
+      </h2>
+      <p className="mt-2 text-sm leading-relaxed text-slate-600">{transitSuggestion.summary}</p>
       <a
         href={transitSuggestion.plannerUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 inline-block rounded-md bg-dark-green px-3 py-1.5 text-sm font-medium text-white hover:bg-dark-green-light"
+        className="mt-3 inline-block rounded-full bg-dark-green px-4 py-1.5 text-sm font-medium text-white transition hover:bg-dark-green-light"
       >
         Open VTA trip planner
       </a>
@@ -72,7 +77,7 @@ export function SidePanel({
       <button
         type="button"
         onClick={() => setDismissed(false)}
-        className="absolute top-4 left-4 z-[1000] rounded-full bg-dark-green px-4 py-2 text-sm font-medium text-white shadow-lg hover:bg-dark-green-light"
+        className="absolute top-4 left-4 z-[1000] rounded-full bg-white/70 px-4 py-2.5 text-sm font-medium text-slate-800 shadow-lg ring-1 ring-black/5 backdrop-blur-xl transition hover:bg-white/90"
       >
         Show details
       </button>
@@ -80,53 +85,53 @@ export function SidePanel({
   }
 
   return (
-    <div className="absolute top-4 left-4 z-[1000] flex max-h-[calc(100vh-2rem)] w-96 flex-col overflow-y-auto rounded-lg bg-background/95 p-4 shadow-2xl backdrop-blur">
+    <div className="absolute top-4 left-4 z-[1000] flex max-h-[calc(100vh-2rem)] w-96 flex-col overflow-y-auto rounded-3xl bg-white/70 p-5 shadow-2xl ring-1 ring-black/5 backdrop-blur-2xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold text-foreground">DACarpool</h1>
+        <h1 className="text-lg font-semibold tracking-tight text-slate-900">DACarpool</h1>
         <button
           type="button"
           onClick={() => setDismissed(true)}
           aria-label="Dismiss"
-          className="rounded-full px-2 py-1 text-foreground/60 hover:bg-dark-green/10 hover:text-foreground"
+          className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-white hover:text-slate-700"
         >
           ✕
         </button>
       </div>
 
-      <div className="mt-3 flex items-center gap-3 rounded-md border border-dark-green/20 p-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-dark-green text-sm font-semibold text-white">
+      <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-dark-green text-sm font-semibold text-white">
           {(riderName ?? "G").charAt(0).toUpperCase()}
         </div>
-        <div>
-          <p className="text-sm font-medium text-foreground">{riderName ?? "Guest"}</p>
-          <p className="text-xs text-foreground/60">De Anza College</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-slate-900">{riderName ?? "Guest"}</p>
+          <p className="text-xs text-slate-500">De Anza College</p>
         </div>
       </div>
 
-      <div className="mt-3 flex rounded-md border border-dark-green/20 p-1">
+      <div className="mt-3 flex gap-1 rounded-full bg-white/60 p-1 ring-1 ring-black/5">
         <button
           type="button"
           onClick={() => setMode("rider")}
-          className={`flex-1 rounded px-3 py-1.5 text-sm font-medium ${
-            mode === "rider" ? "bg-dark-green text-white" : "text-foreground/70"
+          className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+            mode === "rider" ? "bg-dark-green text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          Rider mode
+          Rider
         </button>
         <button
           type="button"
           onClick={() => setMode("driver")}
-          className={`flex-1 rounded px-3 py-1.5 text-sm font-medium ${
-            mode === "driver" ? "bg-dark-green text-white" : "text-foreground/70"
+          className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+            mode === "driver" ? "bg-dark-green text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
           }`}
         >
-          Driver mode
+          Driver
         </button>
       </div>
 
       <div className="mt-4">{result && <ResultSummary result={result} />}</div>
 
-      <nav className="mt-4 space-y-1 border-t border-dark-green/20 pt-3">
+      <nav className="mt-4 space-y-0.5 border-t border-black/5 pt-3">
         <NavItem label="My rides" icon="🚗" />
         <NavItem label="Account" icon="👤" />
         <NavItem label="Settings" icon="⚙️" />

@@ -5,6 +5,8 @@ export interface Match {
   request_ids: string[];
   explanation: string | null;
   carbon_savings_kg: number | null;
+  route_id: string | null;
+  status: string;
   created_at: string;
 }
 
@@ -12,6 +14,7 @@ export interface CreateMatchInput {
   requestIds: string[];
   explanation: string;
   carbonSavingsKg: number;
+  routeId?: string;
 }
 
 export async function findMatchByRequestId(requestId: string): Promise<Match | null> {
@@ -22,12 +25,20 @@ export async function findMatchByRequestId(requestId: string): Promise<Match | n
   return result.rows[0] ?? null;
 }
 
+export async function findConfirmedMatchesByRouteId(routeId: string): Promise<Match[]> {
+  const result = await pool.query<Match>(
+    "SELECT * FROM matches WHERE route_id = $1 ORDER BY created_at ASC",
+    [routeId]
+  );
+  return result.rows;
+}
+
 export async function createMatch(input: CreateMatchInput): Promise<Match> {
   const result = await pool.query<Match>(
-    `INSERT INTO matches (request_ids, explanation, carbon_savings_kg)
-     VALUES ($1, $2, $3)
+    `INSERT INTO matches (request_ids, explanation, carbon_savings_kg, route_id)
+     VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [input.requestIds, input.explanation, input.carbonSavingsKg]
+    [input.requestIds, input.explanation, input.carbonSavingsKg, input.routeId ?? null]
   );
   return result.rows[0];
 }
