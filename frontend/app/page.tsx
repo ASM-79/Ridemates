@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Reveal } from "./Reveal";
 import { ParallaxHero } from "./ParallaxHero";
+import { NavDrawer } from "./NavDrawer";
 
 const features = [
   {
@@ -38,6 +39,7 @@ export default function LandingPage() {
           >
             Sign up
           </Link>
+          <NavDrawer />
         </nav>
       </header>
 

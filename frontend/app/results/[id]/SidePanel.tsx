@@ -1,21 +1,22 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import type { CommuteRequestResult } from "@/lib/api";
 import { RiderPanel } from "./RiderPanel";
 import { DriverPanel } from "./DriverPanel";
 
 type Mode = "rider" | "driver";
 
-function NavItem({ label, icon }: { label: string; icon: ReactNode }) {
+function NavItem({ href, label, icon }: { href: string; label: string; icon: string }) {
   return (
-    <button
-      type="button"
+    <Link
+      href={href}
       className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
     >
       <span className="text-base">{icon}</span>
       {label}
-    </button>
+    </Link>
   );
 }
 
@@ -87,8 +88,10 @@ export function SidePanel({ result }: { result: CommuteRequestResult | null }) {
       </div>
 
       <nav className="mt-4 space-y-0.5 border-t border-black/5 pt-3">
-        <NavItem label="Account" icon="👤" />
-        <NavItem label="Settings" icon="⚙️" />
+        <NavItem href="/rides" label="Ride history" icon="🕓" />
+        <NavItem href="/saved" label="Saved rides" icon="⭐" />
+        <NavItem href="/account" label="Account" icon="👤" />
+        <NavItem href="/settings" label="Settings" icon="⚙️" />
       </nav>
     </div>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getCurrentUser, getRiderDashboard, type RiderDashboardRequest, type User } from "@/lib/api";
+import { saveRide } from "@/lib/savedRides";
 
 function StatusBadge({ status }: { status: "matched" | "pending" }) {
   if (status === "matched") {
@@ -103,6 +104,15 @@ export function RideHistoryView() {
               No match yet — {r.transitSuggestion.line}, ~{r.transitSuggestion.estimatedDurationMin} min
             </p>
           )}
+          <button
+            type="button"
+            onClick={() =>
+              saveRide(r.commuteRequest.origin_address, r.commuteRequest.dest_address)
+            }
+            className="mt-2 text-xs font-medium text-gold-dark hover:underline"
+          >
+            ☆ Save this route
+          </button>
         </div>
       ))}
     </div>
