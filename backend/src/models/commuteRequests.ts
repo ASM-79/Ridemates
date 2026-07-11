@@ -27,6 +27,20 @@ export interface CreateCommuteRequestInput {
   flexibilityMinutes: number;
 }
 
+export async function findPendingCommuteRequests(): Promise<CommuteRequest[]> {
+  const result = await pool.query<CommuteRequest>(
+    "SELECT * FROM commute_requests WHERE status = 'pending' ORDER BY departure_time ASC"
+  );
+  return result.rows;
+}
+
+export async function markCommuteRequestsMatched(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  await pool.query("UPDATE commute_requests SET status = 'matched' WHERE id = ANY($1::uuid[])", [
+    ids,
+  ]);
+}
+
 export async function createCommuteRequest(
   input: CreateCommuteRequestInput
 ): Promise<CommuteRequest> {
