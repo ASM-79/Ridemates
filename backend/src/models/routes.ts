@@ -11,6 +11,7 @@ export interface Route {
   end_address: string;
   schedule: unknown;
   seats_available: number;
+  is_online: boolean;
   created_at: string;
 }
 
@@ -57,5 +58,13 @@ export async function findRoutesByDriverUserId(driverUserId: string): Promise<Ro
 
 export async function findRouteById(id: string): Promise<Route | null> {
   const result = await pool.query<Route>("SELECT * FROM routes WHERE id = $1", [id]);
+  return result.rows[0] ?? null;
+}
+
+export async function setRouteOnlineStatus(id: string, isOnline: boolean): Promise<Route | null> {
+  const result = await pool.query<Route>(
+    "UPDATE routes SET is_online = $2 WHERE id = $1 RETURNING *",
+    [id, isOnline]
+  );
   return result.rows[0] ?? null;
 }

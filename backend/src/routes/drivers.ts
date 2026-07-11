@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { geocodeAddress, GeocodeError } from "../services/geocode.js";
 import { findOrCreateUser, findUserByEmail } from "../models/users.js";
-import { createRoute, findRoutesByDriverUserId, findRouteById } from "../models/routes.js";
+import {
+  createRoute,
+  findRoutesByDriverUserId,
+  findRouteById,
+  setRouteOnlineStatus,
+} from "../models/routes.js";
 import {
   findPendingCommuteRequests,
   findCommuteRequestById,
@@ -93,17 +98,20 @@ driversRouter.get("/drivers/:email/dashboard", async (req, res) => {
       const confirmedRequestIds = confirmedMatches.flatMap((m) => m.request_ids);
       const confirmedRiders = await findCommuteRequestsByIdsWithRider(confirmedRequestIds);
 
-      const nearbyPending = pendingRequests.filter((r) => {
-        const startDist = haversineMiles(r.origin_lat, r.origin_lng, route.start_lat, route.start_lng);
-        const endDist = haversineMiles(r.dest_lat, r.dest_lng, route.end_lat, route.end_lng);
-        return startDist <= NEARBY_RADIUS_MILES && endDist <= NEARBY_RADIUS_MILES;
-      });
+      const nearbyPending = route.is_online
+        ? pendingRequests.filter((r) => {
+            const startDist = haversineMiles(r.origin_lat, r.origin_lng, route.start_lat, route.start_lng);
+            const endDist = haversineMiles(r.dest_lat, r.dest_lng, route.end_lat, route.end_lng);
+            return startDist <= NEARBY_RADIUS_MILES && endDist <= NEARBY_RADIUS_MILES;
+          })
+        : [];
       const nearbyPendingWithRider = await findCommuteRequestsByIdsWithRider(
         nearbyPending.map((r) => r.id)
       );
 
       return {
         route,
+        isOnline: route.is_online,
         seatsAvailable: route.seats_available,
         confirmedCount: confirmedRiders.length,
         seatsRemaining: Math.max(route.seats_available - confirmedRiders.length, 0),
@@ -138,6 +146,9 @@ driversRouter.post("/routes/:routeId/confirm", async (req, res) => {
   const route = await findRouteById(routeId);
   if (!route) {
     return res.status(404).json({ error: "Route not found" });
+  }
+  if (!route.is_online) {
+    return res.status(409).json({ error: "Go online to confirm riders on this route" });
   }
 
   const commuteRequest = await findCommuteRequestById(requestId);
