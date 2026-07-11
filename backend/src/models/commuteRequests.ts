@@ -27,6 +27,31 @@ export interface CreateCommuteRequestInput {
   flexibilityMinutes: number;
 }
 
+export async function findCommuteRequestById(id: string): Promise<CommuteRequest | null> {
+  const result = await pool.query<CommuteRequest>("SELECT * FROM commute_requests WHERE id = $1", [
+    id,
+  ]);
+  return result.rows[0] ?? null;
+}
+
+export interface CommuteRequestWithRider extends CommuteRequest {
+  rider_name: string;
+}
+
+export async function findCommuteRequestsByIdsWithRider(
+  ids: string[]
+): Promise<CommuteRequestWithRider[]> {
+  if (ids.length === 0) return [];
+  const result = await pool.query<CommuteRequestWithRider>(
+    `SELECT cr.*, u.name AS rider_name
+     FROM commute_requests cr
+     JOIN users u ON u.id = cr.user_id
+     WHERE cr.id = ANY($1::uuid[])`,
+    [ids]
+  );
+  return result.rows;
+}
+
 export async function findPendingCommuteRequests(): Promise<CommuteRequest[]> {
   const result = await pool.query<CommuteRequest>(
     "SELECT * FROM commute_requests WHERE status = 'pending' ORDER BY departure_time ASC"

@@ -14,6 +14,14 @@ export interface CreateMatchInput {
   carbonSavingsKg: number;
 }
 
+export async function findMatchByRequestId(requestId: string): Promise<Match | null> {
+  const result = await pool.query<Match>(
+    "SELECT * FROM matches WHERE $1 = ANY(request_ids) ORDER BY created_at DESC LIMIT 1",
+    [requestId]
+  );
+  return result.rows[0] ?? null;
+}
+
 export async function createMatch(input: CreateMatchInput): Promise<Match> {
   const result = await pool.query<Match>(
     `INSERT INTO matches (request_ids, explanation, carbon_savings_kg)

@@ -4,6 +4,7 @@ import express from "express";
 import { healthRouter } from "./routes/health.js";
 import { commuteRequestsRouter } from "./routes/commuteRequests.js";
 import { matchRouter } from "./routes/match.js";
+import { resultsRouter } from "./routes/results.js";
 
 const app = express();
 const port = process.env.PORT ?? 4000;
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(healthRouter);
 app.use(commuteRequestsRouter);
 app.use(matchRouter);
+app.use(resultsRouter);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
