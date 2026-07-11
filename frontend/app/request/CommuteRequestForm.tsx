@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { createCommuteRequest, type CreateCommuteRequestResponse } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import { createCommuteRequest } from "@/lib/api";
 
 export function CommuteRequestForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [originAddress, setOriginAddress] = useState("");
   const [destAddress, setDestAddress] = useState("");
   const [departureTime, setDepartureTime] = useState("");
   const [flexibilityMinutes, setFlexibilityMinutes] = useState(15);
-  const [status, setStatus] = useState<"idle" | "submitting" | "error" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [result, setResult] = useState<CreateCommuteRequestResponse | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,32 +29,11 @@ export function CommuteRequestForm() {
         departureTime,
         flexibilityMinutes,
       });
-      setResult(response);
-      setStatus("success");
+      router.push(`/results/${response.commuteRequest.id}`);
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");
     }
-  }
-
-  if (status === "success" && result) {
-    return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-green-900">
-        <h2 className="text-lg font-semibold">Commute request submitted</h2>
-        <p className="mt-2 text-sm">
-          Matched origin to <span className="font-medium">{result.commuteRequest.origin_address}</span>{" "}
-          and destination to{" "}
-          <span className="font-medium">{result.commuteRequest.dest_address}</span>.
-        </p>
-        <button
-          type="button"
-          onClick={() => setStatus("idle")}
-          className="mt-4 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
-        >
-          Submit another
-        </button>
-      </div>
-    );
   }
 
   return (
