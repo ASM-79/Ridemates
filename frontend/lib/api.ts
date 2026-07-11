@@ -34,7 +34,61 @@ export interface CreateCommuteRequestResponse {
   commuteRequest: CommuteRequest;
 }
 
+export interface MatchedRider {
+  requestId: string;
+  name: string;
+  originAddress: string;
+  originLat: number;
+  originLng: number;
+  destAddress: string;
+  destLat: number;
+  destLng: number;
+}
+
+export interface MatchedResult {
+  status: "matched";
+  match: {
+    id: string;
+    explanation: string | null;
+    carbonSavingsKg: number | null;
+    riders: MatchedRider[];
+  };
+}
+
+export interface TransitSuggestion {
+  plannerUrl: string;
+  line: string;
+  summary: string;
+  estimatedDurationMin: number;
+}
+
+export interface UnmatchedResult {
+  status: "unmatched";
+  transitSuggestion: TransitSuggestion;
+  commuteRequest: {
+    originAddress: string;
+    originLat: number;
+    originLng: number;
+    destAddress: string;
+    destLat: number;
+    destLng: number;
+  };
+}
+
+export type CommuteRequestResult = MatchedResult | UnmatchedResult;
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+
+export async function getCommuteRequestResult(id: string): Promise<CommuteRequestResult> {
+  const res = await fetch(`${API_URL}/commute-requests/${id}/result`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to load result");
+  }
+
+  return data as CommuteRequestResult;
+}
 
 export async function createCommuteRequest(
   input: CreateCommuteRequestInput
