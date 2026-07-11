@@ -184,3 +184,19 @@ driversRouter.post("/routes/:routeId/confirm", async (req, res) => {
 
   res.status(201).json({ match });
 });
+
+driversRouter.patch("/routes/:routeId/online", async (req, res) => {
+  const { routeId } = req.params;
+  const { online } = req.body as { online?: boolean };
+
+  if (typeof online !== "boolean") {
+    return res.status(400).json({ error: "online must be a boolean" });
+  }
+
+  const route = await setRouteOnlineStatus(routeId, online);
+  if (!route) {
+    return res.status(404).json({ error: "Route not found" });
+  }
+
+  res.json({ route });
+});

@@ -78,8 +78,11 @@ export async function findOrCreateUser(name: string, email: string): Promise<Use
     return existing.rows[0];
   }
 
+  // These users are created without a password (via the request/route forms,
+  // not signup) — password_hash is NOT NULL, so pass an empty placeholder.
+  // They simply can't log in with a password unless they later sign up properly.
   const inserted = await pool.query<User>(
-    `INSERT INTO users (name, email) VALUES ($1, $2) RETURNING ${PUBLIC_FIELDS}`,
+    `INSERT INTO users (name, email, password_hash) VALUES ($1, $2, '') RETURNING ${PUBLIC_FIELDS}`,
     [name, email]
   );
   return inserted.rows[0];
