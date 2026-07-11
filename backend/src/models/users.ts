@@ -7,6 +7,13 @@ export interface User {
   role: string;
 }
 
+export async function findUserById(id: string): Promise<User | null> {
+  const result = await pool.query<User>("SELECT id, name, email, role FROM users WHERE id = $1", [
+    id,
+  ]);
+  return result.rows[0] ?? null;
+}
+
 export async function findUserByEmail(email: string): Promise<User | null> {
   const result = await pool.query<User>("SELECT id, name, email, role FROM users WHERE email = $1", [
     email,

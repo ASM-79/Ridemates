@@ -4,6 +4,7 @@ import {
   findCommuteRequestsByIdsWithRider,
 } from "../models/commuteRequests.js";
 import { findMatchByRequestId } from "../models/matches.js";
+import { findUserById } from "../models/users.js";
 import { buildTransitSuggestion } from "../services/transit.js";
 
 export const resultsRouter = Router();
@@ -16,12 +17,15 @@ resultsRouter.get("/commute-requests/:id/result", async (req, res) => {
     return res.status(404).json({ error: "Commute request not found" });
   }
 
+  const owner = await findUserById(commuteRequest.user_id);
+
   if (commuteRequest.status === "matched") {
     const match = await findMatchByRequestId(id);
     if (match) {
       const riders = await findCommuteRequestsByIdsWithRider(match.request_ids);
       return res.json({
         status: "matched",
+        viewer: owner ? { name: owner.name, email: owner.email } : null,
         match: {
           id: match.id,
           explanation: match.explanation,
@@ -43,6 +47,7 @@ resultsRouter.get("/commute-requests/:id/result", async (req, res) => {
 
   return res.json({
     status: "unmatched",
+    viewer: owner ? { name: owner.name, email: owner.email } : null,
     transitSuggestion: buildTransitSuggestion(commuteRequest),
     commuteRequest: {
       originAddress: commuteRequest.origin_address,
