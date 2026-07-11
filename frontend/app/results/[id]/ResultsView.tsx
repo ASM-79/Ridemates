@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { getCommuteRequestResult, type CommuteRequestResult } from "@/lib/api";
-import { SidePanel } from "./SidePanel";
+import { SidePanel } from "@/components/dashboard/SidePanel";
 
-const MatchMap = dynamic(() => import("./MatchMap").then((m) => m.MatchMap), {
+const MatchMap = dynamic(() => import("@/components/dashboard/MatchMap").then((m) => m.MatchMap), {
   ssr: false,
   loading: () => (
     <div className="flex h-full w-full items-center justify-center bg-red/5 text-sm text-foreground/60">
@@ -67,9 +67,11 @@ export function ResultsView({ requestId }: { requestId: string }) {
         };
 
   return (
-    <div className="relative h-full w-full">
-      {destination && <MatchMap origins={origins} destination={destination} />}
-      <SidePanel result={result} />
+    <div className="flex h-full w-full">
+      <SidePanel viewer={result.viewer} />
+      <div className="relative h-full flex-1">
+        {destination && <MatchMap origins={origins} destination={destination} />}
+      </div>
     </div>
   );
 }

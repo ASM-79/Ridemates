@@ -5,9 +5,50 @@ import {
   confirmPickup,
   getDriverDashboard,
   scheduleRoute,
+  setRouteOnline,
   type DriverDashboard,
   type Viewer,
 } from "@/lib/api";
+
+function IconInput({
+  icon,
+  ...props
+}: { icon: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm">
+        {icon}
+      </span>
+      <input
+        {...props}
+        className="w-full rounded-lg border border-black/10 bg-white/80 py-1.5 pr-3 pl-9 text-sm focus:border-red focus:outline-none"
+      />
+    </div>
+  );
+}
+
+function OnlineToggle({
+  online,
+  onToggle,
+}: {
+  online: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={online}
+      onClick={onToggle}
+      className={`flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+        online ? "bg-gold/20 text-gold-dark" : "bg-slate-200 text-slate-500"
+      }`}
+    >
+      <span className={`h-2 w-2 rounded-full ${online ? "bg-gold animate-pulse" : "bg-slate-400"}`} />
+      {online ? "Online" : "Offline"}
+    </button>
+  );
+}
 
 export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
   const [dashboard, setDashboard] = useState<DriverDashboard | null>(null);
@@ -21,6 +62,7 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [submitError, setSubmitError] = useState("");
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [togglingRouteId, setTogglingRouteId] = useState<string | null>(null);
 
   async function loadDashboard() {
     if (!viewer) return;
@@ -77,6 +119,18 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
     }
   }
 
+  async function handleToggleOnline(routeId: string, currentlyOnline: boolean) {
+    setTogglingRouteId(routeId);
+    try {
+      await setRouteOnline(routeId, !currentlyOnline);
+      await loadDashboard();
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to update online status");
+    } finally {
+      setTogglingRouteId(null);
+    }
+  }
+
   if (!viewer) {
     return <p className="text-sm text-slate-500">Sign in via a commute request to see driver tools.</p>;
   }
@@ -86,35 +140,35 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
       <button
         type="button"
         onClick={() => setFormOpen((v) => !v)}
-        className="w-full rounded-full bg-red px-4 py-2 text-sm font-medium text-white transition hover:bg-red-light"
+        className="w-full rounded-full bg-red px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-red/20 transition hover:scale-[1.02] hover:bg-red-light active:scale-95"
       >
         {formOpen ? "Cancel" : "+ Schedule a ride"}
       </button>
 
       {formOpen && (
         <form onSubmit={handleSubmit} className="space-y-2 rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
-          <input
+          <IconInput
+            icon="📍"
             type="text"
             required
             placeholder="Start address"
             value={startAddress}
             onChange={(e) => setStartAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
-          <input
+          <IconInput
+            icon="🏁"
             type="text"
             required
             placeholder="End address"
             value={endAddress}
             onChange={(e) => setEndAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
-          <input
+          <IconInput
+            icon="🕐"
             type="time"
             required
             value={time}
             onChange={(e) => setTime(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-500">Seats available</label>
@@ -146,11 +200,20 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
           <p className="text-sm text-slate-500">No routes yet — schedule one above.</p>
         )}
         {dashboard?.routes.map((r) => (
-          <div key={r.route.id} className="rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
-            <p className="truncate text-sm font-medium text-slate-900">
-              {r.route.start_address.split(",")[0]} → {r.route.end_address.split(",")[0]}
-            </p>
-            <div className="mt-1 flex items-center gap-1.5">
+          <div
+            key={r.route.id}
+            className="rounded-2xl bg-white/60 p-3 ring-1 ring-black/5 transition hover:shadow-md"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className="truncate text-sm font-medium text-slate-900">
+                📍 {r.route.start_address.split(",")[0]} → 🏁 {r.route.end_address.split(",")[0]}
+              </p>
+              <OnlineToggle
+                online={r.isOnline}
+                onToggle={() => handleToggleOnline(r.route.id, r.isOnline)}
+              />
+            </div>
+            <div className="mt-1.5 flex items-center gap-1.5">
               <span className="rounded-full bg-red/15 px-2 py-0.5 text-xs font-medium text-red">
                 {r.confirmedCount}/{r.seatsAvailable} seats filled
               </span>
@@ -158,6 +221,9 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
                 <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
                   Full
                 </span>
+              )}
+              {togglingRouteId === r.route.id && (
+                <span className="text-xs text-slate-400">updating…</span>
               )}
             </div>
 
@@ -169,7 +235,13 @@ export function DriverPanel({ viewer }: { viewer: Viewer | null }) {
               </ul>
             )}
 
-            {r.pendingNearby.length > 0 && (
+            {!r.isOnline && (
+              <p className="mt-2 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs text-slate-500">
+                You&apos;re offline — go online to see and confirm nearby riders.
+              </p>
+            )}
+
+            {r.isOnline && r.pendingNearby.length > 0 && (
               <div className="mt-2 space-y-1.5 border-t border-black/5 pt-2">
                 <p className="text-xs font-medium text-slate-500">Riders nearby to confirm</p>
                 {r.pendingNearby.map((rider) => (

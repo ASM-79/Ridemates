@@ -23,6 +23,23 @@ function StatusBadge({ status }: { status: "matched" | "pending" }) {
   );
 }
 
+function IconInput({
+  icon,
+  ...props
+}: { icon: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <div className="relative">
+      <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm">
+        {icon}
+      </span>
+      <input
+        {...props}
+        className="w-full rounded-lg border border-black/10 bg-white/80 py-1.5 pr-3 pl-9 text-sm focus:border-red focus:outline-none"
+      />
+    </div>
+  );
+}
+
 export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
   const [dashboard, setDashboard] = useState<RiderDashboard | null>(null);
   const [loadError, setLoadError] = useState("");
@@ -87,35 +104,35 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
       <button
         type="button"
         onClick={() => setFormOpen((v) => !v)}
-        className="w-full rounded-full bg-red px-4 py-2 text-sm font-medium text-white transition hover:bg-red-light"
+        className="w-full rounded-full bg-red px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-red/20 transition hover:scale-[1.02] hover:bg-red-light active:scale-95"
       >
         {formOpen ? "Cancel" : "+ New ride request"}
       </button>
 
       {formOpen && (
         <form onSubmit={handleSubmit} className="space-y-2 rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
-          <input
+          <IconInput
+            icon="📍"
             type="text"
             required
-            placeholder="Origin address"
+            placeholder="Current location"
             value={originAddress}
             onChange={(e) => setOriginAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
-          <input
+          <IconInput
+            icon="🏁"
             type="text"
             required
-            placeholder="Destination address"
+            placeholder="Destination"
             value={destAddress}
             onChange={(e) => setDestAddress(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
-          <input
+          <IconInput
+            icon="🕐"
             type="datetime-local"
             required
             value={departureTime}
             onChange={(e) => setDepartureTime(e.target.value)}
-            className="w-full rounded-lg border border-black/10 bg-white/80 px-3 py-1.5 text-sm focus:border-red focus:outline-none"
           />
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-500">Flexibility (min)</label>
@@ -147,10 +164,13 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
           <p className="text-sm text-slate-500">No requests yet — submit one above.</p>
         )}
         {dashboard?.requests.map((r) => (
-          <div key={r.commuteRequest.id} className="rounded-2xl bg-white/60 p-3 ring-1 ring-black/5">
+          <div
+            key={r.commuteRequest.id}
+            className="rounded-2xl bg-white/60 p-3 ring-1 ring-black/5 transition hover:shadow-md"
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="truncate text-sm font-medium text-slate-900">
-                {r.commuteRequest.origin_address.split(",")[0]} →{" "}
+                📍 {r.commuteRequest.origin_address.split(",")[0]} → 🏁{" "}
                 {r.commuteRequest.dest_address.split(",")[0]}
               </p>
               <StatusBadge status={r.status} />

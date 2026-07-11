@@ -53,10 +53,10 @@ export function VerifyView() {
       <h2 className="text-base font-semibold text-gold-dark">Email verified</h2>
       <p className="mt-2 text-sm text-slate-600">You&apos;re all set and logged in.</p>
       <Link
-        href="/request"
+        href="/"
         className="mt-4 inline-block rounded-md bg-red px-4 py-2 text-sm font-medium text-white hover:bg-red-light"
       >
-        Submit your commute
+        Continue to Ridemates
       </Link>
     </div>
   );

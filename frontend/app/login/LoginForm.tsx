@@ -19,7 +19,7 @@ export function LoginForm() {
 
     try {
       await login({ email, password });
-      router.push("/request");
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");

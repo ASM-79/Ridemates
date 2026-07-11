@@ -110,11 +110,13 @@ export interface Route {
   end_address: string;
   schedule: unknown;
   seats_available: number;
+  is_online: boolean;
   created_at: string;
 }
 
 export interface DriverRouteSummary {
   route: Route;
+  isOnline: boolean;
   seatsAvailable: number;
   confirmedCount: number;
   seatsRemaining: number;
@@ -227,6 +229,22 @@ export async function confirmPickup(
 
   if (!res.ok) {
     throw new Error(data.error ?? "Failed to confirm pickup");
+  }
+
+  return data;
+}
+
+export async function setRouteOnline(routeId: string, online: boolean): Promise<{ route: Route }> {
+  const res = await fetch(`${API_URL}/routes/${routeId}/online`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ online }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to update online status");
   }
 
   return data;
