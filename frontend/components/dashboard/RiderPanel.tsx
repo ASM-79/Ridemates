@@ -4,7 +4,9 @@ import { useEffect, useState, type FormEvent } from "react";
 import {
   createCommuteRequest,
   getRiderDashboard,
+  selectDriver,
   type RiderDashboard,
+  type RiderDashboardRequest,
   type Viewer,
 } from "@/lib/api";
 
@@ -40,10 +42,78 @@ function IconInput({
   );
 }
 
+function DriverPickerModal({
+  request,
+  onClose,
+  onPicked,
+}: {
+  request: RiderDashboardRequest;
+  onClose: () => void;
+  onPicked: (selectedRequestId: string) => Promise<void>;
+}) {
+  const [pickingId, setPickingId] = useState<string | null>(null);
+  const otherRiders = request.match?.riders.filter((r) => r.requestId !== request.commuteRequest.id) ?? [];
+
+  async function handlePick(requestId: string) {
+    setPickingId(requestId);
+    try {
+      await onPicked(requestId);
+      onClose();
+    } finally {
+      setPickingId(null);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-slate-900">Who&apos;s driving?</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+          >
+            ✕
+          </button>
+        </div>
+        <p className="mt-1 text-xs text-slate-500">
+          Pick who you&apos;d prefer to drive. They&apos;ll see that you selected them.
+        </p>
+        <div className="mt-4 space-y-2">
+          {otherRiders.map((rider) => (
+            <button
+              key={rider.requestId}
+              type="button"
+              disabled={pickingId !== null}
+              onClick={() => handlePick(rider.requestId)}
+              className={`flex w-full items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                request.mySelectedDriverRequestId === rider.requestId
+                  ? "border-red bg-red/5 text-red"
+                  : "border-black/10 text-slate-700 hover:bg-red/5"
+              } disabled:opacity-50`}
+            >
+              <span className="flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-red text-xs font-semibold text-white">
+                  {rider.name.charAt(0).toUpperCase()}
+                </span>
+                {rider.name}
+              </span>
+              {pickingId === rider.requestId ? "…" : request.mySelectedDriverRequestId === rider.requestId ? "✓" : ""}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
   const [dashboard, setDashboard] = useState<RiderDashboard | null>(null);
   const [loadError, setLoadError] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [pickerRequestId, setPickerRequestId] = useState<string | null>(null);
 
   const [originAddress, setOriginAddress] = useState("");
   const [destAddress, setDestAddress] = useState("");
@@ -98,6 +168,8 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
   if (!viewer) {
     return <p className="text-sm text-slate-500">Sign in via a commute request to see rider tools.</p>;
   }
+
+  const pickerRequest = dashboard?.requests.find((r) => r.commuteRequest.id === pickerRequestId) ?? null;
 
   return (
     <div className="space-y-3">
@@ -176,14 +248,30 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
               <StatusBadge status={r.status} />
             </div>
             {r.status === "matched" && r.match && (
-              <p className="mt-1 text-xs text-slate-600">
-                Riding with{" "}
-                {r.match.riders
-                  .filter((rider) => rider.requestId !== r.commuteRequest.id)
-                  .map((rider) => rider.name)
-                  .join(", ") || "no one else yet"}
-                {r.match.carbonSavingsKg !== null && ` · ${r.match.carbonSavingsKg} kg CO₂ saved`}
-              </p>
+              <>
+                <p className="mt-1 text-xs text-slate-600">
+                  Riding with{" "}
+                  {r.match.riders
+                    .filter((rider) => rider.requestId !== r.commuteRequest.id)
+                    .map((rider) => rider.name)
+                    .join(", ") || "no one else yet"}
+                  {r.match.carbonSavingsKg !== null && ` · ${r.match.carbonSavingsKg} kg CO₂ saved`}
+                </p>
+                {r.pickedMeAsDriver && r.pickedMeAsDriver.length > 0 && (
+                  <p className="mt-1.5 rounded-lg bg-gold/15 px-2.5 py-1.5 text-xs font-medium text-gold-dark">
+                    🔔 {r.pickedMeAsDriver.join(", ")} picked you as driver!
+                  </p>
+                )}
+                {r.match.riders.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setPickerRequestId(r.commuteRequest.id)}
+                    className="mt-2 rounded-full border border-red/30 px-3 py-1 text-xs font-medium text-red transition hover:bg-red/5"
+                  >
+                    {r.mySelectedDriverRequestId ? "Change driver pick" : "Choose your driver"}
+                  </button>
+                )}
+              </>
             )}
             {r.status === "pending" && r.transitSuggestion && (
               <p className="mt-1 text-xs text-slate-600">
@@ -194,6 +282,18 @@ export function RiderPanel({ viewer }: { viewer: Viewer | null }) {
           </div>
         ))}
       </div>
+
+      {pickerRequest && (
+        <DriverPickerModal
+          request={pickerRequest}
+          onClose={() => setPickerRequestId(null)}
+          onPicked={async (selectedRequestId) => {
+            if (!pickerRequest.match) return;
+            await selectDriver(pickerRequest.match.id, pickerRequest.commuteRequest.id, selectedRequestId);
+            await loadDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }

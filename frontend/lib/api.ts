@@ -92,6 +92,8 @@ export interface RiderDashboardRequest {
     carbonSavingsKg: number | null;
     riders: { requestId: string; name: string; originAddress: string }[];
   };
+  mySelectedDriverRequestId?: string | null;
+  pickedMeAsDriver?: string[];
   transitSuggestion?: TransitSuggestion;
 }
 
@@ -249,6 +251,24 @@ export async function setRouteOnline(routeId: string, online: boolean): Promise<
   }
 
   return data;
+}
+
+export async function selectDriver(
+  matchId: string,
+  selectorRequestId: string,
+  selectedRequestId: string
+): Promise<void> {
+  const res = await fetch(`${API_URL}/matches/${matchId}/select-driver`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ selectorRequestId, selectedRequestId }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to select driver");
+  }
 }
 
 export interface SignupInput {

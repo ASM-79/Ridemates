@@ -5,6 +5,7 @@ import {
   findCommuteRequestsByIdsWithRider,
 } from "../models/commuteRequests.js";
 import { findMatchByRequestId } from "../models/matches.js";
+import { findSelectionBySelector, findSelectionsForSelectedRequest } from "../models/rideSelections.js";
 import { buildTransitSuggestion } from "../services/transit.js";
 
 export const ridersRouter = Router();
@@ -24,6 +25,8 @@ ridersRouter.get("/riders/:email/dashboard", async (req, res) => {
         const match = await findMatchByRequestId(commuteRequest.id);
         if (match) {
           const riders = await findCommuteRequestsByIdsWithRider(match.request_ids);
+          const mySelection = await findSelectionBySelector(match.id, commuteRequest.id);
+          const alerts = await findSelectionsForSelectedRequest(commuteRequest.id);
           return {
             commuteRequest,
             status: "matched" as const,
@@ -37,6 +40,8 @@ ridersRouter.get("/riders/:email/dashboard", async (req, res) => {
                 originAddress: r.origin_address,
               })),
             },
+            mySelectedDriverRequestId: mySelection?.selected_request_id ?? null,
+            pickedMeAsDriver: alerts.map((a) => a.selector_name),
           };
         }
       }

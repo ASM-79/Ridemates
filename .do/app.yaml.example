@@ -17,7 +17,10 @@ services:
       deploy_on_push: true
     source_dir: backend
     environment_slug: node-js
-    build_command: npm install && npm run build
+    # --include=dev is required: DO's buildpack sets NODE_ENV=production
+    # during the build step, which makes a plain `npm install` skip
+    # devDependencies (typescript/tsc) needed to run the build.
+    build_command: npm install --include=dev && npm run build
     run_command: npm start
     http_port: 8080
     instance_size_slug: basic-xxs
@@ -31,6 +34,7 @@ services:
         value: "${frontend.PUBLIC_URL}"
       - key: NODE_ENV
         type: GENERAL
+        scope: RUN_TIME
         value: "production"
     health_check:
       http_path: /health
@@ -42,7 +46,7 @@ services:
       deploy_on_push: true
     source_dir: frontend
     environment_slug: node-js
-    build_command: npm install && npm run build
+    build_command: npm install --include=dev && npm run build
     run_command: npm start
     http_port: 8080
     instance_size_slug: basic-xxs
@@ -52,3 +56,16 @@ services:
         type: GENERAL
         scope: RUN_AND_BUILD_TIME
         value: "${backend.PUBLIC_URL}"
+
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /api
+      component:
+        name: backend
+    - match:
+        path:
+          prefix: /
+      component:
+        name: frontend

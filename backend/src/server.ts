@@ -9,6 +9,7 @@ import { resultsRouter } from "./routes/results.js";
 import { ridersRouter } from "./routes/riders.js";
 import { driversRouter } from "./routes/drivers.js";
 import { authRouter } from "./routes/auth.js";
+import { rideSelectionsRouter } from "./routes/rideSelections.js";
 import { attachSession } from "./middleware/auth.js";
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(resultsRouter);
 app.use(ridersRouter);
 app.use(driversRouter);
 app.use(authRouter);
+app.use(rideSelectionsRouter);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
