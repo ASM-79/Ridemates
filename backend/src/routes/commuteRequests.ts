@@ -2,10 +2,9 @@ import { Router } from "express";
 import { geocodeAddress, GeocodeError } from "../services/geocode.js";
 import { findOrCreateUser } from "../models/users.js";
 import { createCommuteRequest } from "../models/commuteRequests.js";
+import { isCollegeEmail } from "../services/emailValidation.js";
 
 export const commuteRequestsRouter = Router();
-
-const EMAIL_PATTERN = /^[^\s@]+@(deanza\.edu|fhda\.edu)$/i;
 
 interface CreateCommuteRequestBody {
   name?: string;
@@ -24,7 +23,7 @@ commuteRequestsRouter.post("/commute-requests", async (req, res) => {
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     return res.status(400).json({ error: "name is required" });
   }
-  if (!email || !EMAIL_PATTERN.test(email)) {
+  if (!email || !isCollegeEmail(email)) {
     return res.status(400).json({ error: "a valid @deanza.edu or @fhda.edu email is required" });
   }
   if (!originAddress || typeof originAddress !== "string") {

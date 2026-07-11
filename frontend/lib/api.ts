@@ -231,3 +231,76 @@ export async function confirmPickup(
 
   return data;
 }
+
+export interface SignupInput {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export async function signup(input: SignupInput): Promise<{ user: User; verificationUrl: string }> {
+  const res = await fetch(`${API_URL}/auth/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to sign up");
+  }
+
+  return data;
+}
+
+export async function verifyEmail(token: string): Promise<{ user: User }> {
+  const res = await fetch(`${API_URL}/auth/verify-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ token }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to verify email");
+  }
+
+  return data;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export async function login(input: LoginInput): Promise<{ user: User }> {
+  const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(input),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error ?? "Failed to log in");
+  }
+
+  return data;
+}
+
+export async function logout(): Promise<void> {
+  await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+  const res = await fetch(`${API_URL}/auth/me`, { credentials: "include" });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.user;
+}

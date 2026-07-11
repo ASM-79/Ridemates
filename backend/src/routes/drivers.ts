@@ -10,10 +10,10 @@ import {
 } from "../models/commuteRequests.js";
 import { createMatch, findConfirmedMatchesByRouteId } from "../models/matches.js";
 import { haversineMiles } from "../services/geo.js";
+import { isCollegeEmail } from "../services/emailValidation.js";
 
 export const driversRouter = Router();
 
-const EMAIL_PATTERN = /^[^\s@]+@(deanza\.edu|fhda\.edu)$/i;
 const NEARBY_RADIUS_MILES = 3;
 const KG_CO2_PER_SOLO_MILE = 0.404;
 
@@ -34,7 +34,7 @@ driversRouter.post("/routes", async (req, res) => {
   if (!name || typeof name !== "string" || name.trim().length === 0) {
     return res.status(400).json({ error: "name is required" });
   }
-  if (!email || !EMAIL_PATTERN.test(email)) {
+  if (!email || !isCollegeEmail(email)) {
     return res.status(400).json({ error: "a valid @deanza.edu or @fhda.edu email is required" });
   }
   if (!startAddress || typeof startAddress !== "string") {
