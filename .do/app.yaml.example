@@ -1,0 +1,54 @@
+name: ridemates
+region: sfo
+
+envs:
+  - key: DATABASE_URL
+    type: SECRET
+    value: "REPLACE_WITH_DOCTL_DATABASES_CONNECTION_URI"
+  - key: GRADIENT_MODEL_ACCESS_KEY
+    type: SECRET
+    value: "REPLACE_WITH_GRADIENT_ACCESS_KEY"
+
+services:
+  - name: backend
+    github:
+      repo: ASM-79/Ridemates
+      branch: main
+      deploy_on_push: true
+    source_dir: backend
+    environment_slug: node-js
+    build_command: npm install && npm run build
+    run_command: npm start
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    envs:
+      - key: JWT_SECRET
+        type: SECRET
+        value: "REPLACE_WITH_RANDOM_HEX_SECRET"
+      - key: FRONTEND_URL
+        type: GENERAL
+        value: "${frontend.PUBLIC_URL}"
+      - key: NODE_ENV
+        type: GENERAL
+        value: "production"
+    health_check:
+      http_path: /health
+
+  - name: frontend
+    github:
+      repo: ASM-79/Ridemates
+      branch: main
+      deploy_on_push: true
+    source_dir: frontend
+    environment_slug: node-js
+    build_command: npm install && npm run build
+    run_command: npm start
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    envs:
+      - key: NEXT_PUBLIC_API_URL
+        type: GENERAL
+        scope: RUN_AND_BUILD_TIME
+        value: "${backend.PUBLIC_URL}"

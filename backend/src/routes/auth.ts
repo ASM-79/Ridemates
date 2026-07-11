@@ -22,11 +22,17 @@ export const authRouter = Router();
 const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:3000";
 const MIN_PASSWORD_LENGTH = 8;
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
 function setSessionCookie(res: import("express").Response, token: string) {
   res.cookie(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // Backend and frontend live on different subdomains in production (both
+    // under the ondigitalocean.app public suffix, so browsers treat them as
+    // different sites) — cross-origin fetch with credentials only sends the
+    // cookie back if SameSite=None, which itself requires Secure.
+    sameSite: IS_PRODUCTION ? "none" : "lax",
+    secure: IS_PRODUCTION,
     maxAge: SESSION_TTL_SECONDS * 1000,
   });
 }
@@ -133,7 +139,11 @@ authRouter.post("/auth/login", async (req, res) => {
 });
 
 authRouter.post("/auth/logout", (_req, res) => {
-  res.clearCookie(SESSION_COOKIE_NAME);
+  res.clearCookie(SESSION_COOKIE_NAME, {
+    httpOnly: true,
+    sameSite: IS_PRODUCTION ? "none" : "lax",
+    secure: IS_PRODUCTION,
+  });
   res.status(204).end();
 });
 
