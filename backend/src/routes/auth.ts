@@ -3,23 +3,19 @@ import { isCollegeEmail } from "../services/emailValidation.js";
 import {
   hashPassword,
   verifyPassword,
-  generateVerificationToken,
   signSessionToken,
   SESSION_COOKIE_NAME,
   SESSION_TTL_SECONDS,
 } from "../services/authTokens.js";
 import {
-  createUnverifiedUser,
+  createVerifiedUser,
   findUserByEmail,
   findUserByEmailWithAuth,
   findUserById,
-  findUserByVerificationToken,
-  markEmailVerified,
 } from "../models/users.js";
 
 export const authRouter = Router();
 
-const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:3000";
 const MIN_PASSWORD_LENGTH = 8;
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
@@ -63,47 +59,17 @@ authRouter.post("/auth/signup", async (req, res) => {
   }
 
   const passwordHash = await hashPassword(password);
-  const { token, expiresAt } = generateVerificationToken();
 
-  const user = await createUnverifiedUser({
+  const user = await createVerifiedUser({
     name: name.trim(),
     email: normalizedEmail,
     passwordHash,
-    verificationToken: token,
-    verificationTokenExpiresAt: expiresAt,
   });
-
-  const verificationUrl = `${FRONTEND_URL}/verify?token=${token}`;
-
-  // No email provider configured yet — log it server-side and hand the
-  // link back in the response so the signup flow is testable end-to-end.
-  console.log(`[auth] Verification link for ${normalizedEmail}: ${verificationUrl}`);
-
-  res.status(201).json({ user, verificationUrl });
-});
-
-interface VerifyEmailBody {
-  token?: string;
-}
-
-authRouter.post("/auth/verify-email", async (req, res) => {
-  const { token } = req.body as VerifyEmailBody;
-
-  if (!token || typeof token !== "string") {
-    return res.status(400).json({ error: "token is required" });
-  }
-
-  const user = await findUserByVerificationToken(token);
-  if (!user) {
-    return res.status(400).json({ error: "This verification link is invalid or has expired" });
-  }
-
-  await markEmailVerified(user.id);
 
   const sessionToken = signSessionToken({ userId: user.id, email: user.email });
   setSessionCookie(res, sessionToken);
 
-  res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  res.status(201).json({ user });
 });
 
 interface LoginBody {

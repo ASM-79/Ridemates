@@ -34,40 +34,22 @@ export async function findUserByEmailWithAuth(email: string): Promise<UserWithAu
   return result.rows[0] ?? null;
 }
 
-export async function findUserByVerificationToken(token: string): Promise<UserWithAuth | null> {
-  const result = await pool.query<UserWithAuth>(
-    `SELECT ${PUBLIC_FIELDS}, password_hash, email_verified FROM users
-     WHERE verification_token = $1 AND verification_token_expires_at > now()`,
-    [token]
-  );
-  return result.rows[0] ?? null;
-}
-
-export interface CreateUnverifiedUserInput {
+export interface CreateVerifiedUserInput {
   name: string;
   email: string;
   passwordHash: string;
-  verificationToken: string;
-  verificationTokenExpiresAt: Date;
 }
 
-export async function createUnverifiedUser(input: CreateUnverifiedUserInput): Promise<User> {
+// Email verification is skipped for now (no email provider configured) —
+// accounts are created already verified so signup logs straight in.
+export async function createVerifiedUser(input: CreateVerifiedUserInput): Promise<User> {
   const result = await pool.query<User>(
-    `INSERT INTO users (name, email, password_hash, verification_token, verification_token_expires_at)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO users (name, email, password_hash, email_verified)
+     VALUES ($1, $2, $3, true)
      RETURNING ${PUBLIC_FIELDS}`,
-    [input.name, input.email, input.passwordHash, input.verificationToken, input.verificationTokenExpiresAt]
+    [input.name, input.email, input.passwordHash]
   );
   return result.rows[0];
-}
-
-export async function markEmailVerified(userId: string): Promise<void> {
-  await pool.query(
-    `UPDATE users
-     SET email_verified = true, verification_token = NULL, verification_token_expires_at = NULL
-     WHERE id = $1`,
-    [userId]
-  );
 }
 
 export async function findOrCreateUser(name: string, email: string): Promise<User> {

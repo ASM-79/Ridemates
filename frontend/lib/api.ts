@@ -277,7 +277,7 @@ export interface SignupInput {
   password: string;
 }
 
-export async function signup(input: SignupInput): Promise<{ user: User; verificationUrl: string }> {
+export async function signup(input: SignupInput): Promise<{ user: User }> {
   const res = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -289,23 +289,6 @@ export async function signup(input: SignupInput): Promise<{ user: User; verifica
 
   if (!res.ok) {
     throw new Error(data.error ?? "Failed to sign up");
-  }
-
-  return data;
-}
-
-export async function verifyEmail(token: string): Promise<{ user: User }> {
-  const res = await fetch(`${API_URL}/auth/verify-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ token }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error ?? "Failed to verify email");
   }
 
   return data;

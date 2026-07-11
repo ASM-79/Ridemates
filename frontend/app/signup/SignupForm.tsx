@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signup } from "@/lib/api";
 
 export function SignupForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "error" | "done">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
-  const [verificationUrl, setVerificationUrl] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,31 +19,12 @@ export function SignupForm() {
     setError("");
 
     try {
-      const result = await signup({ name, email, password });
-      setVerificationUrl(result.verificationUrl);
-      setStatus("done");
+      await signup({ name, email, password });
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setStatus("error");
     }
-  }
-
-  if (status === "done") {
-    return (
-      <div className="rounded-2xl bg-gold/10 p-6 ring-1 ring-gold/25">
-        <h2 className="text-base font-semibold text-gold-dark">Almost there</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          We&apos;d normally email you a verification link. Since email sending isn&apos;t
-          configured yet, here it is directly:
-        </p>
-        <Link
-          href={verificationUrl.replace(/^https?:\/\/[^/]+/, "")}
-          className="mt-3 inline-block break-all rounded-lg bg-white/70 px-3 py-2 text-sm text-gold-dark underline"
-        >
-          {verificationUrl}
-        </Link>
-      </div>
-    );
   }
 
   return (
